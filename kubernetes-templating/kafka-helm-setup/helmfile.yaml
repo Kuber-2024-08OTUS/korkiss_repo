@@ -1,0 +1,38 @@
+# helmfile.yaml
+# This file is configured for Helm 3
+# Helmfile v0.150.0 or later must be used with this configuration
+
+
+releases:
+  - name: kafka-prod
+    namespace: prod
+    chart: bitnami/kafka
+    version: 15.0.0
+    values:
+      - replicaCount: 5
+      - image:
+          tag: "3.5.2"
+      - auth:
+          clientProtocol: SASL_PLAINTEXT
+          interBrokerProtocol: SASL_PLAINTEXT
+          enabled: true
+          sasl:
+            enabled: true
+            mechanism: PLAIN
+            user: "your-username"
+            password: "your-password"
+      - zookeeper:
+          enabled: true
+
+  - name: kafka-dev
+    namespace: dev
+    chart: bitnami/kafka
+    version: 15.0.0
+    values:
+      - replicaCount: 1
+      - auth:
+          clientProtocol: PLAINTEXT
+          interBrokerProtocol: PLAINTEXT
+          enabled: false
+      - zookeeper:
+          enabled: true

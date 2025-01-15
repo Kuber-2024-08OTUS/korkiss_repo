@@ -1,0 +1,14 @@
+replicaCount: 5
+image:
+  tag: "3.5.2"
+auth:
+  clientProtocol: SASL_PLAINTEXT
+  interBrokerProtocol: SASL_PLAINTEXT
+  enabled: true
+  sasl:
+    enabled: true
+    mechanism: PLAIN
+    user: "your-username"
+    password: "your-password"
+zookeeper:
+  enabled: true

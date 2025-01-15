@@ -1,0 +1,3 @@
+```
+helm install release otus
+```

@@ -1,0 +1,61 @@
+namespace: homework
+deployment:
+  name: nginx-deployment
+app: nginx
+replicas: 3
+strategy:
+  rollingUpdate:
+    maxUnavailable: 1
+serviceAccountName: monitoring
+nodeSelector:
+  homework: "true"
+container:
+  name: nginx
+  image: nginx
+  port: 8000
+  lifecycle:
+    preStopCommand: ["/bin/sh", "-c", "rm /homework/index.html"]
+  volumeMounts:
+    - name: workdir
+      mountPath: /homework
+    - name: nginx-config
+      mountPath: /etc/nginx/nginx.conf
+      subPath: nginx.conf
+    - name: configmap-volume
+      mountPath: /homework/conf
+  readinessProbe:
+    path: /index.html
+    port: 8000
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 3
+initContainers:
+  - name: install
+    image: busybox:1.28
+    command: ["wget", "-O", "/init/index.html", "http://info.cern.ch"]
+    volumeMounts:
+      - name: workdir
+        mountPath: "/init"
+dnsPolicy: Default
+volumes:
+  - name: workdir
+    persistentVolumeClaim:
+      claimName: homework-pvc
+  - name: nginx-config
+    configMap:
+      name: nginx-config-map
+  - name: configmap-volume
+    configMap:
+      name: homework-configmap
+ingress:
+  host: homework.otus
+
+# Redis Configuration
+redis:
+  enabled: true  # Включаем Redis
+  auth:
+    enabled: true  # Включаем аутентификацию (по желанию)
+    password: "password"  # Задайте пароль для Redis (если необходимо)
+  master:
+    service:
+      port: 6379  # Порт, на котором Redis будет слушать

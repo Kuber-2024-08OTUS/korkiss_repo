@@ -1,0 +1,5 @@
+# Homework for OTUS
+
+1. Run `minikube tunnel`
+2. Manually add to `hosts` domain `homework.otus` with minikube tunnl ip
+3. Go to page `http://{{ .Values.ingress.host }}/homepage` 

@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.app }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+      containers:
+        - name: {{ .Values.container.name }}
+          image: {{ .Values.container.image }}
+          ports:
+          - containerPort: {{ .Values.container.port }}
+          lifecycle:
+            preStop:
+              exec:
+                command: {{ toJson .Values.container.lifecycle.preStopCommand }}
+          volumeMounts:
+{{- range .Values.container.volumeMounts }}
+          - name: {{ .name }}
+            mountPath: {{ .mountPath }}
+{{- if .subPath }}
+            subPath: {{ .subPath }}
+{{- end }}
+{{- end }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.container.readinessProbe.path }}
+              port: {{ .Values.container.readinessProbe.port }}
+            initialDelaySeconds: {{ .Values.container.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.container.readinessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.container.readinessProbe.failureThreshold }}
+      initContainers:
+{{- range .Values.initContainers }}
+        - name: {{ .name }}
+          image: {{ .image }}
+          command: {{ toJson .command }}
+          volumeMounts:
+{{- range .volumeMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+{{- end }}
+{{- end }}
+      dnsPolicy: {{ .Values.dnsPolicy }}
+      volumes:
+{{- range .Values.volumes }}
+        - name: {{ .name }}
+{{- if .persistentVolumeClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .persistentVolumeClaim.claimName }}
+{{- end }}
+{{- if .configMap }}
+          configMap:
+            name: {{ .configMap.name }}
+{{- end }}
+{{- end }}

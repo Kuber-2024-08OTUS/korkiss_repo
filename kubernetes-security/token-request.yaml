@@ -1,0 +1,9 @@
+apiVersion: authentication.k8s.io/v1
+kind: TokenRequest
+metadata:
+  name: cd-token-request
+  namespace: homework
+spec:
+  audiences:
+  - api
+  expirationSeconds: 86400 # Токен действует 24 часа

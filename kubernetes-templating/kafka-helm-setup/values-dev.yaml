@@ -1,0 +1,7 @@
+replicaCount: 1
+auth:
+  clientProtocol: PLAINTEXT
+  interBrokerProtocol: PLAINTEXT
+  enabled: false
+zookeeper:
+  enabled: true

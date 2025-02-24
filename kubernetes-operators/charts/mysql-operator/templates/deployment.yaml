@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-operator
+spec:
+  replicas: {{ .Values.operator.replicas }}
+  selector:
+    matchLabels:
+      app: mysql-operator
+  template:
+    metadata:
+      labels:
+        app: mysql-operator
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      containers:
+        - name: mysql-operator
+          image: {{ .Values.operator.image }}
+          imagePullPolicy: IfNotPresent

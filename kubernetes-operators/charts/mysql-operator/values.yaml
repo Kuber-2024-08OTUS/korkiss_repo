@@ -1,0 +1,18 @@
+operator:
+  image: shutovba/mysql-operator:1.0.0
+  replicas: 1
+
+serviceAccount:
+  name: mysql-operator-sa
+
+crd:
+  group: otus.homework
+  kind: MySQL
+  plural: mysqls
+  version: v1
+
+mysql:
+  image: mysql:8.0
+  database: mydb
+  password: mypassword
+  storageSize: 1Gi

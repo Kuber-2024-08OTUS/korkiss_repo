@@ -1,0 +1,9 @@
+apiVersion: {{ .Values.crd.group }}/{{ .Values.crd.version }}
+kind: {{ .Values.crd.kind }}
+metadata:
+  name: mysql-instance
+spec:
+  image: {{ .Values.mysql.image }}
+  database: {{ .Values.mysql.database }}
+  password: {{ .Values.mysql.password }}
+  storageSize: {{ .Values.mysql.storageSize }}

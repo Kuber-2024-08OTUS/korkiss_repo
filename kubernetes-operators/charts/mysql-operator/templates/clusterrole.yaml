@@ -1,0 +1,20 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mysql-operator-role  # <-- Имя должно быть указано
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "persistentvolumeclaims"]
+    verbs: ["create", "delete", "get", "list", "watch"]
+  - apiGroups: ["{{ .Values.crd.group }}"]
+    resources: ["{{ .Values.crd.plural }}"]
+    verbs: ["create", "delete", "get", "patch", "list", "watch"]
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["create", "get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create"]
